@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#f4f1eb">
+  <title>VIGER MUSEUM — личная галерея</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: rgba(250, 248, 244, .92);
+      --ink: #25241f;
+      --muted: #757168;
+      --line: rgba(46, 43, 36, .12);
+      --accent: #282822;
+      --accent-hover: #46463d;
+      --shadow: 0 18px 54px rgba(39, 35, 28, .16);
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #e9e6df; color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
+    .topbar { position: fixed; z-index: 5; top: 0; left: 0; right: 0; padding: max(16px, env(safe-area-inset-top)) 20px 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; pointer-events: none; }
+    .brand { display: flex; align-items: center; gap: 11px; min-width: 0; pointer-events: none; }
+    .brand-mark { width: 42px; height: 42px; border: 1px solid rgba(45, 43, 36, .24); border-radius: 14px; background: rgba(250,248,244,.82); display: grid; place-items: center; font-size: 14px; letter-spacing: -.08em; font-weight: 800; box-shadow: 0 5px 20px rgba(0,0,0,.04); }
+    .brand-title { margin: 0; font-size: 15px; line-height: 1.2; letter-spacing: .14em; font-weight: 800; white-space: nowrap; }
+    .brand-subtitle { margin-top: 4px; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .13em; }
+    .actions { display: flex; align-items: center; gap: 8px; pointer-events: auto; }
+    .btn { border: 1px solid var(--line); border-radius: 13px; min-height: 43px; padding: 0 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; background: rgba(250,248,244,.91); color: var(--ink); box-shadow: 0 5px 18px rgba(0,0,0,.045); transition: transform .15s ease, background .15s ease; font-size: 13px; font-weight: 650; white-space: nowrap; }
+    .btn:hover { background: #fff; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn.primary { background: var(--accent); color: #faf9f6; border-color: var(--accent); }
+    .btn.primary:hover { background: var(--accent-hover); }
+    .btn.subtle { box-shadow: none; background: rgba(250,248,244,.68); }
+    .btn.danger { color: #9a3730; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+    .counter { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 7px; background: rgba(90,86,76,.1); font-size: 11px; }
+    .center-note { position: fixed; top: 91px; left: 50%; transform: translateX(-50%); padding: 8px 12px; border-radius: 999px; color: rgba(47,45,39,.67); background: rgba(250,248,244,.65); border: 1px solid rgba(255,255,255,.4); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; white-space: nowrap; backdrop-filter: blur(8px); }
+    .reticle { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 7px; height: 7px; border: 1px solid rgba(255,255,255,.9); background: rgba(48,46,40,.48); border-radius: 50%; box-shadow: 0 0 0 3px rgba(40,38,32,.12); pointer-events: none; z-index: 2; }
+    .bottom-hud { position: fixed; z-index: 4; left: 0; right: 0; bottom: 0; padding: 10px 20px max(16px, env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: end; gap: 16px; pointer-events: none; }
+    .desktop-help, .mobile-help { color: rgba(42,40,34,.68); background: rgba(250,248,244,.77); border: 1px solid rgba(255,255,255,.5); border-radius: 12px; padding: 10px 13px; font-size: 11px; line-height: 1.55; backdrop-filter: blur(10px); }
+    .mobile-help { display: none; }
+    .save-indicator { display: flex; align-items: center; gap: 7px; color: rgba(42,40,34,.64); font-size: 11px; background: rgba(250,248,244,.77); border: 1px solid rgba(255,255,255,.5); padding: 10px 12px; border-radius: 12px; backdrop-filter: blur(10px); }
+    .save-dot { width: 7px; height: 7px; background: #6d9273; border-radius: 50%; }
+    .toast { position: fixed; z-index: 40; bottom: calc(75px + env(safe-area-inset-bottom)); left: 50%; transform: translate(-50%, 12px); opacity: 0; pointer-events: none; padding: 12px 16px; background: #25241f; color: white; border-radius: 12px; box-shadow: var(--shadow); font-size: 13px; max-width: calc(100vw - 32px); text-align: center; transition: opacity .2s ease, transform .2s ease; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .joystick { display: none; position: fixed; z-index: 7; left: max(20px, env(safe-area-inset-left)); bottom: calc(28px + env(safe-area-inset-bottom)); width: 132px; height: 132px; border: 1px solid rgba(255,255,255,.55); background: rgba(248,246,240,.38); backdrop-filter: blur(7px); border-radius: 50%; touch-action: none; pointer-events: auto; }
+    .joystick:before { content: ""; position: absolute; inset: 18px; border: 1px solid rgba(48,46,40,.13); border-radius: 50%; }
+    .stick { position: absolute; top: 50%; left: 50%; width: 52px; height: 52px; transform: translate(-50%,-50%); background: rgba(42,41,35,.78); border: 1px solid rgba(255,255,255,.55); border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,.18); }
+    .look-hint { display: none; position: fixed; z-index: 3; right: max(18px, env(safe-area-inset-right)); bottom: calc(36px + env(safe-area-inset-bottom)); color: rgba(42,40,34,.64); background: rgba(250,248,244,.68); border: 1px solid rgba(255,255,255,.5); padding: 9px 11px; border-radius: 11px; font-size: 10px; line-height: 1.5; pointer-events: none; text-align: center; }
+
+    .drawer-backdrop { position: fixed; z-index: 14; inset: 0; background: rgba(30,29,25,.22); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+    .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+    .drawer { position: fixed; z-index: 15; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); background: #f8f6f1; border-left: 1px solid rgba(40,38,32,.12); box-shadow: var(--shadow); padding: max(22px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 18px; transform: translateX(102%); transition: transform .24s ease; pointer-events: none; }
+    .drawer.open { transform: translateX(0); pointer-events: auto; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .eyebrow { color: var(--muted); font-size: 10px; letter-spacing: .15em; font-weight: 750; text-transform: uppercase; }
+    .panel-head h2, .modal-head h2 { margin: 5px 0 0; font-size: 22px; letter-spacing: -.04em; }
+    .icon-btn { flex: 0 0 38px; height: 38px; width: 38px; border: 1px solid var(--line); border-radius: 12px; background: #fffdf8; cursor: pointer; font-size: 19px; color: var(--ink); }
+    .collection-list { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 9px; padding: 1px 3px 20px 0; }
+    .collection-empty { margin: 6px 0; padding: 28px 20px; border: 1px dashed rgba(55,52,45,.2); border-radius: 16px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .painting-row { width: 100%; text-align: left; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(46,43,36,.09); border-radius: 15px; background: rgba(255,255,255,.7); padding: 9px; cursor: pointer; color: var(--ink); }
+    .painting-row:hover { background: white; }
+    .painting-thumb { width: 68px; height: 61px; flex: 0 0 68px; object-fit: cover; background: #e9e5dc; border-radius: 9px; }
+    .painting-copy { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+    .painting-title { font-size: 13px; font-weight: 750; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .painting-meta { color: var(--muted); font-size: 11px; line-height: 1.4; }
+    .drawer-foot { color: var(--muted); font-size: 11px; line-height: 1.5; border-top: 1px solid var(--line); padding-top: 13px; }
+
+    .modal-backdrop { position: fixed; z-index: 25; inset: 0; background: rgba(31,30,26,.38); display: grid; place-items: center; padding: 18px; backdrop-filter: blur(5px); }
+    .modal-backdrop[hidden] { display: none; }
+    .modal { width: min(480px, 100%); max-height: min(91dvh, 800px); overflow: auto; background: #f9f7f2; border: 1px solid rgba(255,255,255,.65); border-radius: 22px; box-shadow: 0 28px 90px rgba(0,0,0,.25); padding: 20px; }
+    .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 16px; }
+    .modal-head h2 { font-size: 21px; }
+    .preview-wrap { width: 100%; height: 190px; overflow: hidden; display: grid; place-items: center; background: #ece8df; border: 1px solid rgba(45,42,35,.1); border-radius: 14px; margin-bottom: 14px; position: relative; }
+    .preview-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; display: none; }
+    .preview-empty { color: #878174; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; text-align: center; line-height: 1.6; padding: 15px; }
+    .field { display: flex; flex-direction: column; gap: 7px; margin: 13px 0; }
+    .field label { color: #676258; font-size: 12px; font-weight: 700; }
+    .field input, .field textarea { width: 100%; border: 1px solid rgba(49,46,38,.15); border-radius: 11px; outline: none; background: rgba(255,255,255,.74); color: var(--ink); padding: 12px 13px; font-size: 14px; }
+    .field input:focus, .field textarea:focus { border-color: rgba(55,54,43,.54); box-shadow: 0 0 0 3px rgba(55,54,43,.07); }
+    .field textarea { min-height: 85px; resize: vertical; }
+    .modal-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; }
+    .modal-actions .spacer { flex: 1; }
+    .modal-note { margin-top: 14px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    #fileInput { display: none; }
+    .error-screen { position: fixed; z-index: 50; inset: 0; display: none; place-items: center; background: #f4f1eb; padding: 24px; text-align: center; }
+    .error-screen.show { display: grid; }
+    .error-card { max-width: 430px; }
+    .error-card h1 { font-size: 24px; }
+    .error-card p { color: var(--muted); line-height: 1.6; font-size: 14px; }
+
+    @media (max-width: 700px) {
+      .topbar { padding-left: 13px; padding-right: 13px; gap: 8px; align-items: flex-start; }
+      .brand { gap: 8px; }
+      .brand-mark { width: 36px; height: 36px; border-radius: 12px; font-size: 12px; }
+      .brand-title { font-size: 12px; letter-spacing: .1em; }
+      .brand-subtitle { font-size: 8px; letter-spacing: .08em; }
+      .actions { gap: 6px; }
+      .btn { min-height: 38px; padding: 0 10px; border-radius: 11px; font-size: 11px; }
+      #collectionBtn .button-label { display: none; }
+      .counter { min-width: 19px; height: 19px; }
+      .center-note { top: 73px; font-size: 8px; padding: 7px 10px; }
+      .desktop-help, .save-indicator { display: none; }
+      .mobile-help { display: block; font-size: 9px; padding: 8px 10px; max-width: 140px; }
+      .joystick { display: block; }
+      .look-hint { display: block; }
+      .bottom-hud { padding: 10px 12px max(12px, env(safe-area-inset-bottom)); justify-content: flex-end; }
+      .toast { bottom: calc(175px + env(safe-area-inset-bottom)); font-size: 12px; }
+      .modal { padding: 16px; border-radius: 18px; }
+      .preview-wrap { height: 155px; }
+      .modal-actions .btn { flex: 1 1 auto; }
+      .modal-actions .spacer { flex-basis: 100%; height: 0; }
+    }
+    @media (max-width: 380px) {
+      .brand-subtitle { display: none; }
+      .brand-title { font-size: 11px; }
+      .btn { padding: 0 8px; }
+      .actions { gap: 4px; }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="scene" aria-label="Трёхмерный зал музея"></canvas>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">VM</div>
+      <div>
+        <h1 class="brand-title">VIGER MUSEUM</h1>
+        <div class="brand-subtitle">Your memories. Your world.</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="collectionBtn" class="btn" type="button" aria-label="Мои картины"><span aria-hidden="true">▤</span><span class="button-label">Мои картины</span><span id="paintingCount" class="counter">0</span></button>
+      <button id="addBtn" class="btn primary" type="button"><span aria-hidden="true">＋</span> Добавить картину</button>
+    </div>
+  </div>
+  <div class="center-note">ЛИЧНАЯ ГАЛЕРЕЯ · СОХРАНЕНИЕ НА УСТРОЙСТВЕ</div>
+  <div class="reticle"></div>
+  <div class="bottom-hud">
+    <div class="desktop-help">WASD — движение · мышь — обзор · E — открыть картину<br>Esc — освободить мышь · нажми на рамку, чтобы посмотреть</div>
+    <div class="mobile-help">Джойстик — движение<br>Свайп по экрану — обзор</div>
+    <div class="save-indicator"><span class="save-dot"></span><span>Локальная коллекция</span></div>
+  </div>
+  <div id="joystick" class="joystick" aria-label="Виртуальный джойстик"><div id="stick" class="stick"></div></div>
+  <div class="look-hint">СВАЙП<br>ОБЗОР</div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="drawerBackdrop" class="drawer-backdrop"></div>
+  <aside id="drawer" class="drawer" aria-label="Мои картины" aria-hidden="true">
+    <div class="panel-head">
+      <div><div class="eyebrow">VIGER MUSEUM</div><h2>Мои картины</h2></div>
+      <button id="closeDrawerBtn" class="icon-btn" type="button" aria-label="Закрыть">×</button>
+    </div>
+    <div id="collectionList" class="collection-list"></div>
+    <div class="drawer-foot">Изображения и подписи хранятся в браузере на этом устройстве. Они не загружаются на сервер.</div>
+  </aside>
+
+  <div id="editorBackdrop" class="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="editorHeading">
+      <div class="modal-head">
+        <div><div class="eyebrow" id="editorEyebrow">НОВАЯ КАРТИНА</div><h2 id="editorHeading">Добавить в музей</h2></div>
+        <button id="closeEditorBtn" class="icon-btn" type="button" aria-label="Закрыть">×</button>
+      </div>
+      <div class="preview-wrap">
+        <img id="photoPreview" alt="Предпросмотр картины">
+        <div id="previewEmpty" class="preview-empty">Пока нет изображения<br>Выбери фото из галереи</div>
+      </div>
+      <div class="field">
+        <label for="photoTitle">Название</label>
+        <input id="photoTitle" type="text" maxlength="70" placeholder="Например, Лучший день">
+      </div>
+      <div class="field">
+        <label for="photoCaption">Описание или воспоминание</label>
+        <textarea id="photoCaption" maxlength="500" placeholder="Что хочется сохранить в памяти?"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button id="choosePhotoBtn" class="btn subtle" type="button">Выбрать фото</button>
+        <button id="deletePhotoBtn" class="btn danger" type="button" hidden>Удалить</button>
+        <span class="spacer"></span>
+        <button id="cancelEditorBtn" class="btn" type="button">Отмена</button>
+        <button id="savePhotoBtn" class="btn primary" type="button" disabled>Сохранить</button>
+      </div>
+      <div class="modal-note">Поддерживаются обычные изображения из галереи. Фото уменьшается для экономии памяти и остаётся на этом устройстве.</div>
+    </section>
+  </div>
+
+  <input id="fileInput" type="file" accept="image/*">
+  <div id="errorScreen" class="error-screen">
+    <div class="error-card"><div class="brand-mark" style="margin:0 auto 16px">VM</div><h1>Не удалось запустить 3D</h1><p>Проверь подключение к интернету: Three.js загружается из CDN. Открой сайт в актуальном Chrome, Safari или Firefox и попробуй обновить страницу.</p></div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+
+    const $ = (selector) => document.querySelector(selector);
+    const canvas = $('#scene');
+    const toastEl = $('#toast');
+    const fileInput = $('#fileInput');
+    const editorBackdrop = $('#editorBackdrop');
+    const previewImg = $('#photoPreview');
+    const previewEmpty = $('#previewEmpty');
+    const titleInput = $('#photoTitle');
+    const captionInput = $('#photoCaption');
+    const saveBtn = $('#savePhotoBtn');
+    const deleteBtn = $('#deletePhotoBtn');
+    const collectionList = $('#collectionList');
+    const drawer = $('#drawer');
+    const drawerBackdrop = $('#drawerBackdrop');
+
+    const ROOM_HALF = 8;
+    const ROOM_HEIGHT = 5.3;
+    const WALK_LIMIT = 7.05;
+    const DB_NAME = 'viger-museum-v01';
+    const STORE_NAME = 'paintings';
+    const WALL_LABELS = {
+      north: 'Северная стена',
+      south: 'Южная стена',
+      east: 'Восточная стена',
+      west: 'Западная стена'
+    };
+
+    let db = null;
+    let toastTimer = null;
+    let previewUrl = null;
+    let drawerUrls = [];
+    let editing = null;
+    let pendingSlotId = null;
+    let replaceInEditor = false;
+    let mouseDrag = null;
+    let joystickPointer = null;
+    let lookYaw = 0;
+    let lookPitch = 0;
+    const pressed = Object.create(null);
+    const joystick = { x: 0, y: 0 };
+    const paintings = new Map();
+    const slots = new Map();
+    const slotGroups = [];
+    const clock = new THREE.Clock();
+    const raycaster = new THREE.Raycaster();
+    const rayNdc = new THREE.Vector2();
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+    }
+
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        if (!('indexedDB' in window)) {
+          reject(new Error('IndexedDB is not available'));
+          return;
+        }
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          if (!database.objectStoreNames.contains(STORE_NAME)) {
+            database.createObjectStore(STORE_NAME, { keyPath: 'slotId' });
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error('Cannot open local database'));
+      });
+    }
+
+    function databaseRequest(mode, method, payload) {
+      return new Promise((resolve, reject) => {
+        if (!db) return reject(new Error('Local database is not ready'));
+        const transaction = db.transaction(STORE_NAME, mode);
+        const store = transaction.objectStore(STORE_NAME);
+        let request;
+        if (method === 'getAll') request = store.getAll();
+        else if (method === 'put') request = store.put(payload);
+        else if (method === 'delete') request = store.delete(payload);
+        else return reject(new Error('Unknown database operation'));
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error('Database request failed'));
+      });
+    }
+
+    async function compressImage(file) {
+      let source;
+      try {
+        source = await createImageBitmap(file);
+      } catch (error) {
+        throw new Error('Браузер не смог прочитать это изображение. Попробуй JPG или PNG.');
+      }
+      const maxSide = 1600;
+      const scale = Math.min(1, maxSide / Math.max(source.width, source.height));
+      const width = Math.max(1, Math.round(source.width * scale));
+      const height = Math.max(1, Math.round(source.height * scale));
+      const output = document.createElement('canvas');
+      output.width = width;
+      output.height = height;
+      const context = output.getContext('2d', { alpha: false });
+      context.fillStyle = '#f4f1eb';
+      context.fillRect(0, 0, width, height);
+      context.drawImage(source, 0, 0, width, height);
+      if (source.close) source.close();
+      const blob = await new Promise((resolve) => output.toBlob(resolve, 'image/jpeg', 0.84));
+      if (!blob) throw new Error('Не удалось подготовить изображение. Попробуй другое фото.');
+      return blob;
+    }
+
+    function drawPlaceholderCanvas() {
+      const image = document.createElement('canvas');
+      image.width = 640;
+      image.height = 450;
+      const context = image.getContext('2d');
+      context.fillStyle = '#ece8df';
+      context.fillRect(0, 0, image.width, image.height);
+      context.strokeStyle = '#d4cfc4';
+      context.lineWidth = 2;
+      context.strokeRect(22, 22, image.width - 44, image.height - 44);
+      context.strokeStyle = '#c9c3b7';
+      context.lineWidth = 5;
+      context.beginPath();
+      context.moveTo(286, 195); context.lineTo(354, 195);
+      context.moveTo(320, 161); context.lineTo(320, 229);
+      context.stroke();
+      context.fillStyle = '#777166';
+      context.font = '600 22px Arial, sans-serif';
+      context.textAlign = 'center';
+      context.fillText('ВАША КАРТИНА', 320, 280);
+      context.fillStyle = '#9b9487';
+      context.font = '16px Arial, sans-serif';
+      context.fillText('добавь воспоминание', 320, 310);
+      return image;
+    }
+
+    function makeCanvasTexture(canvasElement) {
+      const texture = new THREE.CanvasTexture(canvasElement);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      return texture;
+    }
+
+    const placeholderTexture = makeCanvasTexture(drawPlaceholderCanvas());
+
+    async function makePhotoTexture(blob) {
+      let image;
+      if (typeof createImageBitmap === 'function') {
+        image = await createImageBitmap(blob);
+      } else {
+        image = await new Promise((resolve, reject) => {
+          const url = URL.createObjectURL(blob);
+          const element = new Image();
+          element.onload = () => { URL.revokeObjectURL(url); resolve(element); };
+          element.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Cannot decode image')); };
+          element.src = url;
+        });
+      }
+      const artCanvas = document.createElement('canvas');
+      artCanvas.width = 640;
+      artCanvas.height = 450;
+      const context = artCanvas.getContext('2d', { alpha: false });
+      context.fillStyle = '#f5f2ec';
+      context.fillRect(0, 0, artCanvas.width, artCanvas.height);
+      const scale = Math.min(artCanvas.width / image.width, artCanvas.height / image.height);
+      const width = image.width * scale;
+      const height = image.height * scale;
+      context.drawImage(image, (artCanvas.width - width) / 2, (artCanvas.height - height) / 2, width, height);
+      if (image.close) image.close();
+      return makeCanvasTexture(artCanvas);
+    }
+
+    function drawLabelTexture(canvasElement, title) {
+      const context = canvasElement.getContext('2d');
+      context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      context.fillStyle = '#f1eee7';
+      context.fillRect(0, 0, canvasElement.width, canvasElement.height);
+      context.strokeStyle = '#dcd6ca';
+      context.lineWidth = 2;
+      context.strokeRect(1, 1, canvasElement.width - 2, canvasElement.height - 2);
+      let label = title || 'СВОБОДНОЕ МЕСТО';
+      if (label.length > 27) label = `${label.slice(0, 26)}…`;
+      context.fillStyle = title ? '#403e37' : '#878173';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.font = title ? '600 25px Arial, sans-serif' : '500 22px Arial, sans-serif';
+      context.fillText(label, canvasElement.width / 2, canvasElement.height / 2 + 1, canvasElement.width - 28);
+    }
+
+    function addBox(scene, geometry, material, position, rotation = null) {
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(position.x, position.y, position.z);
+      if (rotation) mesh.rotation.set(rotation.x || 0, rotation.y || 0, rotation.z || 0);
+      scene.add(mesh);
+      return mesh;
+    }
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#e7e4dd');
+    scene.fog = new THREE.Fog('#e7e4dd', 20, 38);
+
+    const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 75);
+    camera.position.set(0, 1.66, 4.9);
+    camera.rotation.order = 'YXZ';
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    } catch (error) {
+      $('#errorScreen').classList.add('show');
+      throw error;
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.65));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.07;
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xaaa49a, 2.05));
+    const mainLight = new THREE.DirectionalLight(0xfff9ef, 1.25);
+    mainLight.position.set(-2, 8, 4);
+    scene.add(mainLight);
+    const ambientPoints = [
+      [-4, 4.7, -4], [4, 4.7, -4], [-4, 4.7, 4], [4, 4.7, 4], [0, 4.7, 0]
+    ];
+    for (const [x, y, z] of ambientPoints) {
+      const light = new THREE.PointLight(0xfff8ee, 23, 10, 2);
+      light.position.set(x, y, z);
+      scene.add(light);
+      const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.055, 20), new THREE.MeshStandardMaterial({ color: '#faf8f1', roughness: 0.7 }));
+      fixture.position.set(x, ROOM_HEIGHT - 0.08, z);
+      scene.add(fixture);
+    }
+
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: '#f3f0e9', roughness: 0.91 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: '#dcd8cf', roughness: 0.88 });
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: '#faf8f2', roughness: 0.96, side: THREE.DoubleSide });
+    const trimMaterial = new THREE.MeshStandardMaterial({ color: '#d2cdc2', roughness: 0.8 });
+    const frameMaterial = new THREE.MeshStandardMaterial({ color: '#e5dfd4', roughness: 0.77 });
+    const frameInnerMaterial = new THREE.MeshStandardMaterial({ color: '#b8b0a1', roughness: 0.82 });
+
+    addBox(scene, new THREE.PlaneGeometry(ROOM_HALF * 2, ROOM_HALF * 2), floorMaterial, { x: 0, y: 0, z: 0 }, { x: -Math.PI / 2 });
+    addBox(scene, new THREE.PlaneGeometry(ROOM_HALF * 2, ROOM_HALF * 2), ceilingMaterial, { x: 0, y: ROOM_HEIGHT, z: 0 }, { x: Math.PI / 2 });
+    // Four clean gallery walls.
+    addBox(scene, new THREE.BoxGeometry(ROOM_HALF * 2 + 0.2, ROOM_HEIGHT, 0.2), wallMaterial, { x: 0, y: ROOM_HEIGHT / 2, z: -ROOM_HALF - 0.02 });
+    addBox(scene, new THREE.BoxGeometry(ROOM_HALF * 2 + 0.2, ROOM_HEIGHT, 0.2), wallMaterial, { x: 0, y: ROOM_HEIGHT / 2, z: ROOM_HALF + 0.02 });
+    addBox(scene, new THREE.BoxGeometry(0.2, ROOM_HEIGHT, ROOM_HALF * 2 + 0.2), wallMaterial, { x: -ROOM_HALF - 0.02, y: ROOM_HEIGHT / 2, z: 0 });
+    addBox(scene, new THREE.BoxGeometry(0.2, ROOM_HEIGHT, ROOM_HALF * 2 + 0.2), wallMaterial, { x: ROOM_HALF + 0.02, y: ROOM_HEIGHT / 2, z: 0 });
+    // Discreet baseboards make the room feel finished without clutter.
+    addBox(scene, new THREE.BoxGeometry(ROOM_HALF * 2, 0.12, 0.055), trimMaterial, { x: 0, y: 0.075, z: -ROOM_HALF + 0.07 });
+    addBox(scene, new THREE.BoxGeometry(ROOM_HALF * 2, 0.12, 0.055), trimMaterial, { x: 0, y: 0.075, z: ROOM_HALF - 0.07 });
+    addBox(scene, new THREE.BoxGeometry(0.055, 0.12, ROOM_HALF * 2), trimMaterial, { x: -ROOM_HALF + 0.07, y: 0.075, z: 0 });
+    addBox(scene, new THREE.BoxGeometry(0.055, 0.12, ROOM_HALF * 2), trimMaterial, { x: ROOM_HALF - 0.07, y: 0.075, z: 0 });
+
+    function createSlot(slotId, wall, x, y, z, rotationY, index) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+      group.rotation.y = rotationY;
+      group.userData.slotId = slotId;
+      group.userData.wall = wall;
+      group.userData.index = index;
+
+      const backing = new THREE.Mesh(new THREE.BoxGeometry(1.30, 0.98, 0.075), frameMaterial);
+      backing.position.z = 0;
+      group.add(backing);
+      const innerShade = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.82, 0.026), frameInnerMaterial);
+      innerShade.position.z = 0.045;
+      group.add(innerShade);
+      const art = new THREE.Mesh(new THREE.PlaneGeometry(1.095, 0.765), new THREE.MeshBasicMaterial({ map: placeholderTexture, toneMapped: false }));
+      art.position.set(0, 0.002, 0.061);
+      group.add(art);
+
+      // Minimal frame rails around the image.
+      const railDepth = 0.04;
+      const railZ = 0.075;
+      const rails = [
+        { g: new THREE.BoxGeometry(1.30, 0.085, railDepth), p: [0, 0.447, railZ] },
+        { g: new THREE.BoxGeometry(1.30, 0.085, railDepth), p: [0, -0.447, railZ] },
+        { g: new THREE.BoxGeometry(0.085, 0.90, railDepth), p: [-0.607, 0, railZ] },
+        { g: new THREE.BoxGeometry(0.085, 0.90, railDepth), p: [0.607, 0, railZ] }
+      ];
+      for (const rail of rails) {
+        const mesh = new THREE.Mesh(rail.g, frameMaterial);
+        mesh.position.set(rail.p[0], rail.p[1], rail.p[2]);
+        group.add(mesh);
+      }
+
+      const labelCanvas = document.createElement('canvas');
+      labelCanvas.width = 512;
+      labelCanvas.height = 90;
+      drawLabelTexture(labelCanvas, '');
+      const labelTexture = makeCanvasTexture(labelCanvas);
+      const labelMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.10, 0.15), new THREE.MeshBasicMaterial({ map: labelTexture, toneMapped: false }));
+      labelMesh.position.set(0, -0.58, 0.054);
+      group.add(labelMesh);
+      group.traverse((object) => {
+        if (object.isMesh) object.userData.slotId = slotId;
+      });
+      scene.add(group);
+      const slot = { id: slotId, wall, wallName: WALL_LABELS[wall], group, art, labelCanvas, labelTexture, labelMesh, index };
+      slots.set(slotId, slot);
+      slotGroups.push(group);
+      return slot;
+    }
+
+    const positions = [-5.2, -2.6, 0, 2.6, 5.2];
+    const rows = [2.0, 3.62];
+    // Each wall has ten reserved spots. New photos use the nearest unused spot.
+    for (const [rowIndex, y] of rows.entries()) {
+      for (let i = 0; i < positions.length; i++) {
+        createSlot(`north-${rowIndex}-${i}`, 'north', positions[i], y, -7.78, 0, rowIndex * positions.length + i);
+        createSlot(`south-${rowIndex}-${i}`, 'south', -positions[i], y, 7.78, Math.PI, rowIndex * positions.length + i);
+        createSlot(`east-${rowIndex}-${i}`, 'east', 7.78, y, positions[i], -Math.PI / 2, rowIndex * positions.length + i);
+        createSlot(`west-${rowIndex}-${i}`, 'west', -7.78, y, -positions[i], Math.PI / 2, rowIndex * positions.length + i);
+      }
+    }
+
+    function updateSlotLabel(slot, title) {
+      drawLabelTexture(slot.labelCanvas, title || '');
+      slot.labelTexture.needsUpdate = true;
+    }
+
+    async function updateSlotImage(slotId, blob) {
+      const slot = slots.get(slotId);
+      if (!slot) return;
+      let nextTexture = placeholderTexture;
+      if (blob) nextTexture = await makePhotoTexture(blob);
+      const material = slot.art.material;
+      const old = material.map;
+      material.map = nextTexture;
+      material.needsUpdate = true;
+      if (old && old !== placeholderTexture) old.dispose();
+    }
+
+    function findNearestFreeSlot() {
+      let best = null;
+      let bestDistance = Infinity;
+      for (const slot of slots.values()) {
+        if (paintings.has(slot.id)) continue;
+        const distance = camera.position.distanceTo(slot.group.position);
+        if (distance < bestDistance) { best = slot; bestDistance = distance; }
+      }
+      return best;
+    }
+
+    function findSlotAt(clientX, clientY) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      rayNdc.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+      rayNdc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(rayNdc, camera);
+      const hits = raycaster.intersectObjects(slotGroups, true);
+      if (!hits.length) return null;
+      let object = hits[0].object;
+      while (object && !object.userData.slotId) object = object.parent;
+      return object ? slots.get(object.userData.slotId) || null : null;
+    }
+
+    function findCenterSlot() {
+      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const hits = raycaster.intersectObjects(slotGroups, true);
+      if (!hits.length) return null;
+      let object = hits[0].object;
+      while (object && !object.userData.slotId) object = object.parent;
+      return object ? slots.get(object.userData.slotId) || null : null;
+    }
+
+    function updateCount() {
+      $('#paintingCount').textContent = String(paintings.size);
+    }
+
+    function chooseFile(slotId, fromEditor = false) {
+      pendingSlotId = slotId;
+      replaceInEditor = fromEditor;
+      fileInput.value = '';
+      fileInput.click();
+    }
+
+    async function handleFileSelected(file) {
+      if (!file || !pendingSlotId) return;
+      const targetSlot = slots.get(pendingSlotId);
+      if (!targetSlot) return;
+      const targetId = pendingSlotId;
+      const updateCurrent = replaceInEditor && editing && editing.slotId === targetId;
+      pendingSlotId = null;
+      replaceInEditor = false;
+      try {
+        const compressed = await compressImage(file);
+        const baseName = file.name.replace(/\.[^/.]+$/, '').slice(0, 70) || 'Новое воспоминание';
+        if (updateCurrent) {
+          editing.blob = compressed;
+          if (!titleInput.value.trim() || editing.titleFromFilename) {
+            titleInput.value = baseName;
+            editing.titleFromFilename = true;
+          }
+          editing.originalTitle = titleInput.value;
+          await showPreview(compressed);
+          saveBtn.disabled = false;
+        } else {
+          openEditor(targetId, { blob: compressed, title: baseName, caption: '', titleFromFilename: true });
+        }
+      } catch (error) {
+        showToast(error.message || 'Не удалось открыть это изображение.');
+      }
+    }
+
+    fileInput.addEventListener('change', () => handleFileSelected(fileInput.files && fileInput.files[0]));
+
+    async function showPreview(blob) {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+      if (!blob) {
+        previewImg.removeAttribute('src');
+        previewImg.style.display = 'none';
+        previewEmpty.style.display = 'block';
+        return;
+      }
+      previewUrl = URL.createObjectURL(blob);
+      previewImg.src = previewUrl;
+      previewImg.style.display = 'block';
+      previewEmpty.style.display = 'none';
+    }
+
+    async function openEditor(slotId, newImage = null) {
+      if (document.pointerLockElement === renderer.domElement) document.exitPointerLock();
+      const slot = slots.get(slotId);
+      if (!slot) return;
+      const existing = paintings.get(slotId) || null;
+      editing = {
+        slotId,
+        blob: newImage?.blob || existing?.blob || null,
+        titleFromFilename: Boolean(newImage?.titleFromFilename),
+        isNew: !existing,
+        originalTitle: newImage?.title ?? existing?.title ?? '',
+        originalCaption: newImage?.caption ?? existing?.caption ?? ''
+      };
+      $('#editorEyebrow').textContent = existing ? 'КОЛЛЕКЦИЯ МУЗЕЯ' : 'НОВАЯ КАРТИНА';
+      $('#editorHeading').textContent = existing ? 'Изменить картину' : 'Добавить в музей';
+      titleInput.value = editing.originalTitle;
+      captionInput.value = editing.originalCaption;
+      deleteBtn.hidden = !existing;
+      $('#choosePhotoBtn').textContent = editing.blob ? 'Заменить фото' : 'Выбрать фото';
+      await showPreview(editing.blob);
+      saveBtn.disabled = !editing.blob;
+      editorBackdrop.hidden = false;
+      setTimeout(() => titleInput.focus({ preventScroll: true }), 50);
+    }
+
+    function closeEditor() {
+      editorBackdrop.hidden = true;
+      editing = null;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+      previewImg.removeAttribute('src');
+    }
+
+    async function saveEditor() {
+      if (!editing || !editing.blob) return;
+      const slot = slots.get(editing.slotId);
+      if (!slot) return;
+      const title = titleInput.value.trim().slice(0, 70) || 'Без названия';
+      const caption = captionInput.value.trim().slice(0, 500);
+      const record = {
+        slotId: editing.slotId,
+        title,
+        caption,
+        blob: editing.blob,
+        wall: slot.wall,
+        wallName: slot.wallName,
+        updatedAt: Date.now()
+      };
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Сохраняю…';
+      try {
+        await databaseRequest('readwrite', 'put', record);
+        paintings.set(record.slotId, record);
+        await updateSlotImage(record.slotId, record.blob);
+        updateSlotLabel(slot, title);
+        updateCount();
+        closeEditor();
+        if (drawer.classList.contains('open')) renderCollection();
+        showToast('Картина сохранена на этом устройстве');
+      } catch (error) {
+        showToast('Не удалось сохранить. Проверь свободную память браузера.');
+      } finally {
+        saveBtn.textContent = 'Сохранить';
+        saveBtn.disabled = !editing?.blob;
+      }
+    }
+
+    async function deleteCurrentPainting() {
+      if (!editing || !paintings.has(editing.slotId)) return;
+      if (!window.confirm('Удалить эту картину из музея?')) return;
+      const slotId = editing.slotId;
+      try {
+        await databaseRequest('readwrite', 'delete', slotId);
+        paintings.delete(slotId);
+        const slot = slots.get(slotId);
+        await updateSlotImage(slotId, null);
+        updateSlotLabel(slot, '');
+        updateCount();
+        closeEditor();
+        if (drawer.classList.contains('open')) renderCollection();
+        showToast('Картина удалена из музея');
+      } catch (error) {
+        showToast('Не удалось удалить картину');
+      }
+    }
+
+    function openAddForSlot(slot) {
+      if (!slot) return;
+      if (paintings.has(slot.id)) {
+        openEditor(slot.id);
+      } else {
+        chooseFile(slot.id, false);
+      }
+    }
+
+    function onAddButton() {
+      const slot = findNearestFreeSlot();
+      if (!slot) {
+        showToast('Все рамки заняты. Удали картину, чтобы освободить место.');
+        return;
+      }
+      chooseFile(slot.id, false);
+    }
+
+    function openDrawer() {
+      renderCollection();
+      drawer.classList.add('open');
+      drawerBackdrop.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+      if (document.pointerLockElement === renderer.domElement) document.exitPointerLock();
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      drawerBackdrop.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      drawerUrls.forEach((url) => URL.revokeObjectURL(url));
+      drawerUrls = [];
+    }
+
+    function renderCollection() {
+      drawerUrls.forEach((url) => URL.revokeObjectURL(url));
+      drawerUrls = [];
+      collectionList.replaceChildren();
+      const items = [...paintings.values()].sort((a, b) => b.updatedAt - a.updatedAt);
+      if (!items.length) {
+        const empty = document.createElement('div');
+        empty.className = 'collection-empty';
+        empty.textContent = 'Здесь пока пусто. Добавь первую фотографию — она появится в ближайшей свободной рамке.';
+        collectionList.append(empty);
+        return;
+      }
+      for (const item of items) {
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'painting-row';
+        const image = document.createElement('img');
+        image.className = 'painting-thumb';
+        image.alt = '';
+        const url = URL.createObjectURL(item.blob);
+        drawerUrls.push(url);
+        image.src = url;
+        const copy = document.createElement('span');
+        copy.className = 'painting-copy';
+        const title = document.createElement('span');
+        title.className = 'painting-title';
+        title.textContent = item.title || 'Без названия';
+        const meta = document.createElement('span');
+        meta.className = 'painting-meta';
+        meta.textContent = `${item.wallName || WALL_LABELS[item.wall] || 'Музей'}${item.caption ? ' · ' + item.caption : ''}`;
+        copy.append(title, meta);
+        row.append(image, copy);
+        row.addEventListener('click', () => {
+          const slotId = item.slotId;
+          closeDrawer();
+          openEditor(slotId);
+        });
+        collectionList.append(row);
+      }
+    }
+
+    async function loadStoredPaintings() {
+      const records = await databaseRequest('readonly', 'getAll');
+      for (const record of records || []) {
+        if (!slots.has(record.slotId) || !record.blob) continue;
+        paintings.set(record.slotId, record);
+      }
+      updateCount();
+      for (const record of paintings.values()) {
+        const slot = slots.get(record.slotId);
+        updateSlotLabel(slot, record.title);
+        await updateSlotImage(record.slotId, record.blob);
+      }
+    }
+
+    // Keyboard and pointer controls.
+    window.addEventListener('keydown', (event) => {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+      pressed[event.code] = true;
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(event.code)) event.preventDefault();
+      if (event.code === 'KeyE' && !event.repeat && editorBackdrop.hidden && !drawer.classList.contains('open')) {
+        const slot = findCenterSlot();
+        if (slot) openAddForSlot(slot);
+        else showToast('Наведи центр экрана на картину и нажми E');
+      }
+    });
+    window.addEventListener('keyup', (event) => { pressed[event.code] = false; });
+    window.addEventListener('blur', () => { for (const key of Object.keys(pressed)) pressed[key] = false; });
+
+    canvas.addEventListener('pointerdown', (event) => {
+      if (!editorBackdrop.hidden || drawer.classList.contains('open')) return;
+      if (document.pointerLockElement === canvas) return;
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      mouseDrag = {
+        id: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        lastX: event.clientX,
+        lastY: event.clientY,
+        moved: false,
+        type: event.pointerType
+      };
+      try { canvas.setPointerCapture(event.pointerId); } catch (error) { /* Pointer capture may be unavailable. */ }
+    });
+
+    canvas.addEventListener('pointermove', (event) => {
+      if (document.pointerLockElement === canvas) {
+        lookYaw -= event.movementX * 0.0026;
+        lookPitch -= event.movementY * 0.0024;
+        lookPitch = THREE.MathUtils.clamp(lookPitch, -1.25, 1.25);
+        return;
+      }
+      if (!mouseDrag || mouseDrag.id !== event.pointerId) return;
+      const dx = event.clientX - mouseDrag.lastX;
+      const dy = event.clientY - mouseDrag.lastY;
+      const totalX = event.clientX - mouseDrag.startX;
+      const totalY = event.clientY - mouseDrag.startY;
+      if (Math.hypot(totalX, totalY) > 6) mouseDrag.moved = true;
+      if (mouseDrag.moved) {
+        lookYaw -= dx * (mouseDrag.type === 'touch' ? 0.006 : 0.0042);
+        lookPitch -= dy * (mouseDrag.type === 'touch' ? 0.005 : 0.0039);
+        lookPitch = THREE.MathUtils.clamp(lookPitch, -1.25, 1.25);
+      }
+      mouseDrag.lastX = event.clientX;
+      mouseDrag.lastY = event.clientY;
+    });
+
+    canvas.addEventListener('pointerup', (event) => {
+      if (!mouseDrag || mouseDrag.id !== event.pointerId) return;
+      const wasMoved = mouseDrag.moved;
+      const pointerType = mouseDrag.type;
+      mouseDrag = null;
+      if (wasMoved || !editorBackdrop.hidden || drawer.classList.contains('open')) return;
+      const slot = findSlotAt(event.clientX, event.clientY);
+      if (slot) {
+        openAddForSlot(slot);
+      } else if (pointerType === 'mouse' && document.pointerLockElement !== canvas) {
+        if (canvas.requestPointerLock) canvas.requestPointerLock();
+      }
+    });
+    canvas.addEventListener('pointercancel', () => { mouseDrag = null; });
+
+    document.addEventListener('pointerlockchange', () => {
+      if (document.pointerLockElement === canvas) showToast('Мышь захвачена · Esc — освободить');
+    });
+
+    // Mobile virtual joystick.
+    const joystickEl = $('#joystick');
+    const stickEl = $('#stick');
+    function updateJoystick(event) {
+      const rect = joystickEl.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      let dx = event.clientX - centerX;
+      let dy = event.clientY - centerY;
+      const maxRadius = rect.width * 0.31;
+      const distance = Math.hypot(dx, dy);
+      if (distance > maxRadius) { dx *= maxRadius / distance; dy *= maxRadius / distance; }
+      joystick.x = dx / maxRadius;
+      joystick.y = dy / maxRadius;
+      stickEl.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    }
+    function resetJoystick() {
+      joystick.x = 0; joystick.y = 0; joystickPointer = null;
+      stickEl.style.transform = 'translate(-50%,-50%)';
+    }
+    joystickEl.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      joystickPointer = event.pointerId;
+      try { joystickEl.setPointerCapture(event.pointerId); } catch (error) { /* no-op */ }
+      updateJoystick(event);
+    });
+    joystickEl.addEventListener('pointermove', (event) => {
+      if (joystickPointer !== event.pointerId) return;
+      event.preventDefault();
+      updateJoystick(event);
+    });
+    joystickEl.addEventListener('pointerup', (event) => { if (joystickPointer === event.pointerId) resetJoystick(); });
+    joystickEl.addEventListener('pointercancel', resetJoystick);
+
+    $('#addBtn').addEventListener('click', onAddButton);
+    $('#collectionBtn').addEventListener('click', openDrawer);
+    $('#closeDrawerBtn').addEventListener('click', closeDrawer);
+    drawerBackdrop.addEventListener('click', closeDrawer);
+    $('#choosePhotoBtn').addEventListener('click', () => {
+      if (editing) chooseFile(editing.slotId, true);
+    });
+    $('#closeEditorBtn').addEventListener('click', closeEditor);
+    $('#cancelEditorBtn').addEventListener('click', closeEditor);
+    $('#savePhotoBtn').addEventListener('click', saveEditor);
+    $('#deletePhotoBtn').addEventListener('click', deleteCurrentPainting);
+    editorBackdrop.addEventListener('click', (event) => { if (event.target === editorBackdrop) closeEditor(); });
+    titleInput.addEventListener('input', () => {
+      if (editing) editing.titleFromFilename = false;
+      saveBtn.disabled = !editing?.blob;
+    });
+    captionInput.addEventListener('input', () => { saveBtn.disabled = !editing?.blob; });
+
+    function resize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.65));
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+    }
+    window.addEventListener('resize', resize);
+
+    function animate() {
+      const delta = Math.min(clock.getDelta(), 0.05);
+      if (!editorBackdrop.hidden || drawer.classList.contains('open')) {
+        renderer.render(scene, camera);
+        return;
+      }
+      const forwardInput = (pressed.KeyW || pressed.ArrowUp ? 1 : 0) - (pressed.KeyS || pressed.ArrowDown ? 1 : 0) - joystick.y;
+      const sideInput = (pressed.KeyD || pressed.ArrowRight ? 1 : 0) - (pressed.KeyA || pressed.ArrowLeft ? 1 : 0) + joystick.x;
+      const magnitude = Math.hypot(forwardInput, sideInput);
+      if (magnitude > 0.08) {
+        const forward = new THREE.Vector3(-Math.sin(lookYaw), 0, -Math.cos(lookYaw));
+        const right = new THREE.Vector3(Math.cos(lookYaw), 0, -Math.sin(lookYaw));
+        const speed = pressed.ShiftLeft || pressed.ShiftRight ? 4.2 : 2.65;
+        const amount = speed * delta / Math.max(1, magnitude);
+        camera.position.addScaledVector(forward, forwardInput * amount);
+        camera.position.addScaledVector(right, sideInput * amount);
+        camera.position.x = THREE.MathUtils.clamp(camera.position.x, -WALK_LIMIT, WALK_LIMIT);
+        camera.position.z = THREE.MathUtils.clamp(camera.position.z, -WALK_LIMIT, WALK_LIMIT);
+      }
+      camera.position.y = 1.66;
+      camera.rotation.set(lookPitch, lookYaw, 0, 'YXZ');
+      renderer.render(scene, camera);
+    }
+
+    async function init() {
+      try {
+        db = await openDatabase();
+        if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+        await loadStoredPaintings();
+      } catch (error) {
+        showToast('Не удалось открыть локальное хранилище. Проверь настройки браузера.');
+      }
+      renderer.setAnimationLoop(animate);
+    }
+
+    init();
+  </script>
+</body>
+</html>
