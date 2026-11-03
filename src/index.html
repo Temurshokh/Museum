@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#f4f1eb">
-  <title>VIGER MUSEUM — личная галерея</title>
+  <title>Mirsaid. Z. Museum — Personal Gallery v0.4</title>
   <style>
     :root {
       color-scheme: light;
@@ -18,14 +18,15 @@
     }
     * { box-sizing: border-box; }
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #e9e6df; color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 50% 46%, transparent 48%, rgba(42,35,25,.11) 100%); }
     button, input, textarea { font: inherit; }
     button { -webkit-tap-highlight-color: transparent; }
     #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
     .topbar { position: fixed; z-index: 5; top: 0; left: 0; right: 0; padding: max(16px, env(safe-area-inset-top)) 20px 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; pointer-events: none; }
     .brand { display: flex; align-items: center; gap: 11px; min-width: 0; pointer-events: none; }
     .brand-mark { width: 42px; height: 42px; border: 1px solid rgba(45, 43, 36, .24); border-radius: 14px; background: rgba(250,248,244,.82); display: grid; place-items: center; font-size: 14px; letter-spacing: -.08em; font-weight: 800; box-shadow: 0 5px 20px rgba(0,0,0,.04); }
-    .brand-title { margin: 0; font-size: 15px; line-height: 1.2; letter-spacing: .14em; font-weight: 800; white-space: nowrap; }
-    .brand-subtitle { margin-top: 4px; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .13em; }
+    .brand-title { margin: 0; font-size: 15px; line-height: 1.2; letter-spacing: .035em; font-weight: 780; white-space: nowrap; }
+    .brand-subtitle { margin-top: 4px; color: #8b806e; font-size: 9px; text-transform: lowercase; letter-spacing: .14em; font-weight: 600; }
     .actions { display: flex; align-items: center; gap: 8px; pointer-events: auto; }
     .btn { border: 1px solid var(--line); border-radius: 13px; min-height: 43px; padding: 0 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; background: rgba(250,248,244,.91); color: var(--ink); box-shadow: 0 5px 18px rgba(0,0,0,.045); transition: transform .15s ease, background .15s ease; font-size: 13px; font-weight: 650; white-space: nowrap; }
     .btn:hover { background: #fff; transform: translateY(-1px); }
@@ -45,6 +46,7 @@
     .save-dot { width: 7px; height: 7px; background: #6d9273; border-radius: 50%; }
     .toast { position: fixed; z-index: 40; bottom: calc(75px + env(safe-area-inset-bottom)); left: 50%; transform: translate(-50%, 12px); opacity: 0; pointer-events: none; padding: 12px 16px; background: #25241f; color: white; border-radius: 12px; box-shadow: var(--shadow); font-size: 13px; max-width: calc(100vw - 32px); text-align: center; transition: opacity .2s ease, transform .2s ease; }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
+.door-status { position: fixed; z-index: 3; top: 122px; left: 50%; transform: translateX(-50%); color: rgba(42,40,34,.52); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; pointer-events: none; white-space: nowrap; }
     .joystick { display: none; position: fixed; z-index: 7; left: max(20px, env(safe-area-inset-left)); bottom: calc(28px + env(safe-area-inset-bottom)); width: 132px; height: 132px; border: 1px solid rgba(255,255,255,.55); background: rgba(248,246,240,.38); backdrop-filter: blur(7px); border-radius: 50%; touch-action: none; pointer-events: auto; }
     .joystick:before { content: ""; position: absolute; inset: 18px; border: 1px solid rgba(48,46,40,.13); border-radius: 50%; }
     .stick { position: absolute; top: 50%; left: 50%; width: 52px; height: 52px; transform: translate(-50%,-50%); background: rgba(42,41,35,.78); border: 1px solid rgba(255,255,255,.55); border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,.18); }
@@ -95,13 +97,15 @@
       .topbar { padding-left: 13px; padding-right: 13px; gap: 8px; align-items: flex-start; }
       .brand { gap: 8px; }
       .brand-mark { width: 36px; height: 36px; border-radius: 12px; font-size: 12px; }
-      .brand-title { font-size: 12px; letter-spacing: .1em; }
-      .brand-subtitle { font-size: 8px; letter-spacing: .08em; }
+      .brand-title { font-size: 12px; letter-spacing: .015em; }
+      .brand-subtitle { font-size: 8px; letter-spacing: .10em; }
       .actions { gap: 6px; }
       .btn { min-height: 38px; padding: 0 10px; border-radius: 11px; font-size: 11px; }
       #collectionBtn .button-label { display: none; }
       .counter { min-width: 19px; height: 19px; }
       .center-note { top: 73px; font-size: 8px; padding: 7px 10px; }
+      .welcome-bubble { top: 111px; font-size: 10px; max-width: calc(100vw - 32px); white-space: normal; text-align: center; }
+      .door-status { display: none; }
       .desktop-help, .save-indicator { display: none; }
       .mobile-help { display: block; font-size: 9px; padding: 8px 10px; max-width: 140px; }
       .joystick { display: block; }
@@ -115,7 +119,9 @@
     }
     @media (max-width: 380px) {
       .brand-subtitle { display: none; }
-      .brand-title { font-size: 11px; }
+      .brand { gap: 5px; }
+      .brand-title { font-size: 9.5px; letter-spacing: -.02em; }
+      .btn { font-size: 10px; }
       .btn { padding: 0 8px; }
       .actions { gap: 4px; }
     }
@@ -132,10 +138,10 @@
   <canvas id="scene" aria-label="Трёхмерный зал музея"></canvas>
   <div class="topbar">
     <div class="brand">
-      <div class="brand-mark">VM</div>
+      <div class="brand-mark">MZ</div>
       <div>
-        <h1 class="brand-title">VIGER MUSEUM</h1>
-        <div class="brand-subtitle">Your memories. Your world.</div>
+        <h1 class="brand-title">Mirsaid. Z. Museum</h1>
+        <div class="brand-subtitle">by vigerix studio</div>
       </div>
     </div>
     <div class="actions">
@@ -143,11 +149,12 @@
       <button id="addBtn" class="btn primary" type="button"><span aria-hidden="true">＋</span> Добавить картину</button>
     </div>
   </div>
-  <div class="center-note">ЛИЧНАЯ ГАЛЕРЕЯ · СОХРАНЕНИЕ НА УСТРОЙСТВЕ</div>
-  <div class="reticle"></div>
+  <div class="center-note">MIRSAID. Z. MUSEUM · PERSONAL GALLERY</div>
+  <div class="door-status">PRIVATE COLLECTION · QUIET GALLERY</div>
+<div class="reticle"></div>
   <div class="bottom-hud">
-    <div class="desktop-help">WASD — движение · мышь — обзор · E — открыть картину<br>Esc — освободить мышь · нажми на рамку, чтобы посмотреть</div>
-    <div class="mobile-help">Джойстик — движение<br>Свайп по экрану — обзор</div>
+    <div class="desktop-help">WASD — движение · мышь — обзор · E — открыть картину<br>Двери открываются автоматически · Esc — освободить мышь</div>
+    <div class="mobile-help">Джойстик — движение<br>Свайп — обзор · нажми на картину</div>
     <div class="save-indicator"><span class="save-dot"></span><span>Локальная коллекция</span></div>
   </div>
   <div id="joystick" class="joystick" aria-label="Виртуальный джойстик"><div id="stick" class="stick"></div></div>
@@ -157,11 +164,11 @@
   <div id="drawerBackdrop" class="drawer-backdrop"></div>
   <aside id="drawer" class="drawer" aria-label="Мои картины" aria-hidden="true">
     <div class="panel-head">
-      <div><div class="eyebrow">VIGER MUSEUM</div><h2>Мои картины</h2></div>
+      <div><div class="eyebrow">MIRSAID. Z. MUSEUM</div><h2>Мои картины</h2></div>
       <button id="closeDrawerBtn" class="icon-btn" type="button" aria-label="Закрыть">×</button>
     </div>
     <div id="collectionList" class="collection-list"></div>
-    <div class="drawer-foot">Изображения и подписи хранятся в браузере на этом устройстве. Они не загружаются на сервер.</div>
+    <div class="drawer-foot">Изображения и подписи хранятся в IndexedDB этого браузера и не отправляются на сервер.</div>
   </aside>
 
   <div id="editorBackdrop" class="modal-backdrop" hidden>
@@ -195,7 +202,7 @@
 
   <input id="fileInput" type="file" accept="image/*">
   <div id="errorScreen" class="error-screen">
-    <div class="error-card"><div class="brand-mark" style="margin:0 auto 16px">VM</div><h1>Не удалось запустить 3D</h1><p>Проверь подключение к интернету: Three.js загружается из CDN. Открой сайт в актуальном Chrome, Safari или Firefox и попробуй обновить страницу.</p></div>
+    <div class="error-card"><div class="brand-mark" style="margin:0 auto 16px">VM</div><h1>Не удалось запустить 3D</h1><p>Проверь подключение к интернету: Three.js загружается из CDN. Открой сайт в актуальном Chrome, Safari или Firefox и попробуй обновить страницу. После загрузки музей и его фотографии работают локально.</p></div>
   </div>
 
   <script type="module">
@@ -219,7 +226,10 @@
     const ROOM_HALF = 8;
     const ROOM_HEIGHT = 5.3;
     const WALK_LIMIT = 7.05;
-    const DB_NAME = 'viger-museum-v01';
+    const DOOR_Z = ROOM_HALF + 0.02;
+    const DOOR_HALF_WIDTH = 2.02;
+    const DOOR_CROSSING_Z = DOOR_Z - 0.43;
+    const DB_NAME = 'viger-museum-v01'; // Preserve the original local collection across upgrades.
     const STORE_NAME = 'paintings';
     const WALL_LABELS = {
       north: 'Северная стена',
@@ -239,6 +249,8 @@
     let joystickPointer = null;
     let lookYaw = 0;
     let lookPitch = 0;
+    let doorOpen = 0;
+    let museumElapsed = 0;
     const pressed = Object.create(null);
     const joystick = { x: 0, y: 0 };
     const paintings = new Map();
@@ -247,6 +259,7 @@
     const clock = new THREE.Clock();
     const raycaster = new THREE.Raycaster();
     const rayNdc = new THREE.Vector2();
+
 
     function showToast(message) {
       toastEl.textContent = message;
@@ -295,7 +308,7 @@
       } catch (error) {
         throw new Error('Браузер не смог прочитать это изображение. Попробуй JPG или PNG.');
       }
-      const maxSide = 1600;
+      const maxSide = 1280;
       const scale = Math.min(1, maxSide / Math.max(source.width, source.height));
       const width = Math.max(1, Math.round(source.width * scale));
       const height = Math.max(1, Math.round(source.height * scale));
@@ -307,7 +320,7 @@
       context.fillRect(0, 0, width, height);
       context.drawImage(source, 0, 0, width, height);
       if (source.close) source.close();
-      const blob = await new Promise((resolve) => output.toBlob(resolve, 'image/jpeg', 0.84));
+      const blob = await new Promise((resolve) => output.toBlob(resolve, 'image/jpeg', 0.78));
       if (!blob) throw new Error('Не удалось подготовить изображение. Попробуй другое фото.');
       return blob;
     }
@@ -361,8 +374,8 @@
         });
       }
       const artCanvas = document.createElement('canvas');
-      artCanvas.width = 640;
-      artCanvas.height = 450;
+      artCanvas.width = 512;
+      artCanvas.height = 368;
       const context = artCanvas.getContext('2d', { alpha: false });
       context.fillStyle = '#f5f2ec';
       context.fillRect(0, 0, artCanvas.width, artCanvas.height);
@@ -404,57 +417,339 @@
     scene.fog = new THREE.Fog('#e7e4dd', 20, 38);
 
     const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 75);
-    camera.position.set(0, 1.66, 4.9);
+    camera.position.set(0, 1.66, 12.05);
     camera.rotation.order = 'YXZ';
 
+    // Performance profile: keep the render cost predictable on desktop and phones.
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 760;
+    const cpuCores = navigator.hardwareConcurrency || 4;
+    const deviceMemory = navigator.deviceMemory || 4;
+    const lowEndDevice = coarsePointer || cpuCores <= 4 || deviceMemory <= 4;
+    const targetFps = lowEndDevice ? 30 : 45;
+    const frameInterval = 1000 / targetFps;
+    const pixelRatioCap = lowEndDevice ? 0.88 : 1.08;
+    let currentPixelRatio = Math.min(window.devicePixelRatio || 1, pixelRatioCap);
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: !lowEndDevice,
+        alpha: false,
+        depth: true,
+        stencil: false,
+        powerPreference: lowEndDevice ? 'low-power' : 'high-performance'
+      });
     } catch (error) {
       $('#errorScreen').classList.add('show');
       throw error;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.65));
+    renderer.setPixelRatio(currentPixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight, false);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.07;
+    renderer.toneMappingExposure = 1.02;
+    renderer.shadowMap.enabled = false;
+    renderer.info.autoReset = true;
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0xaaa49a, 2.05));
-    const mainLight = new THREE.DirectionalLight(0xfff9ef, 1.25);
-    mainLight.position.set(-2, 8, 4);
+    // Two lights only. Soft-looking accents below are emissive geometry, not real lights.
+    scene.add(new THREE.HemisphereLight(0xfff8ed, 0x948a7b, 1.55));
+    const mainLight = new THREE.DirectionalLight(0xfff0dc, 2.05);
+    mainLight.position.set(-5, 9, 4);
+    mainLight.castShadow = false;
     scene.add(mainLight);
-    const ambientPoints = [
-      [-4, 4.7, -4], [4, 4.7, -4], [-4, 4.7, 4], [4, 4.7, 4], [0, 4.7, 0]
-    ];
-    for (const [x, y, z] of ambientPoints) {
-      const light = new THREE.PointLight(0xfff8ee, 23, 10, 2);
-      light.position.set(x, y, z);
-      scene.add(light);
-      const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.055, 20), new THREE.MeshStandardMaterial({ color: '#faf8f1', roughness: 0.7 }));
-      fixture.position.set(x, ROOM_HEIGHT - 0.08, z);
-      scene.add(fixture);
+
+    // Tiny surface shader: restrained grain + a warm grazing-angle lift. No extra render pass.
+    // Reduce the effect strength on coarse-pointer / low-memory devices.
+    const shaderDetail = lowEndDevice ? 0.48 : 1.0;
+    function addGallerySurfaceShader(material, grain = 0.004, rim = 0.018) {
+      material.onBeforeCompile = (shader) => {
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <color_fragment>',
+          `#include <color_fragment>
+          float museumGrain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+          diffuseColor.rgb *= (1.0 - ${grain.toFixed(4)} + museumGrain * ${(grain * 2).toFixed(4)});`
+        );
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <emissivemap_fragment>',
+          `#include <emissivemap_fragment>
+          float museumRim = pow(1.0 - clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0), 3.0);
+          totalEmissiveRadiance += vec3(0.22, 0.16, 0.09) * museumRim * ${rim.toFixed(4)};`
+        );
+      };
+      material.customProgramCacheKey = () => `mirsaid-surface-${grain}-${rim}`;
+      material.needsUpdate = true;
+      return material;
     }
 
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: '#f3f0e9', roughness: 0.91 });
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: '#dcd8cf', roughness: 0.88 });
-    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: '#faf8f2', roughness: 0.96, side: THREE.DoubleSide });
-    const trimMaterial = new THREE.MeshStandardMaterial({ color: '#d2cdc2', roughness: 0.8 });
-    const frameMaterial = new THREE.MeshStandardMaterial({ color: '#e5dfd4', roughness: 0.77 });
-    const frameInnerMaterial = new THREE.MeshStandardMaterial({ color: '#b8b0a1', roughness: 0.82 });
+    function makePlasterTexture() {
+      const c = document.createElement('canvas'); c.width = c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#e6e0d5'; ctx.fillRect(0, 0, 512, 512);
+      const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+      gradient.addColorStop(0, 'rgba(255,255,255,.22)');
+      gradient.addColorStop(1, 'rgba(119,104,83,.08)');
+      ctx.fillStyle = gradient; ctx.fillRect(0, 0, 512, 512);
+      let seed = 90421;
+      for (let i = 0; i < 3600; i++) {
+        seed = (seed * 1664525 + 1013904223) >>> 0; const x = seed % 512;
+        seed = (seed * 1664525 + 1013904223) >>> 0; const y = seed % 512;
+        const alpha = 0.018 + ((seed >>> 8) % 20) / 1000;
+        ctx.fillStyle = (seed & 1) ? `rgba(255,255,255,${alpha})` : `rgba(105,94,76,${alpha})`;
+        ctx.fillRect(x, y, 1 + (seed % 2), 1);
+      }
+      const texture = new THREE.CanvasTexture(c);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2.4, 1.5);
+      texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+      return texture;
+    }
 
-    addBox(scene, new THREE.PlaneGeometry(ROOM_HALF * 2, ROOM_HALF * 2), floorMaterial, { x: 0, y: 0, z: 0 }, { x: -Math.PI / 2 });
+    const wallMaterial = addGallerySurfaceShader(new THREE.MeshStandardMaterial({ color: '#e8e2d7', map: makePlasterTexture(), roughness: 0.94, metalness: 0.0 }), 0.0035 * shaderDetail, 0.012 * shaderDetail);
+    const floorMaterial = addGallerySurfaceShader(new THREE.MeshStandardMaterial({ color: '#d2cbbf', roughness: 0.78, metalness: 0.025 }), 0.005 * shaderDetail, 0.01 * shaderDetail);
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: '#f1ede5', roughness: 0.97, side: THREE.DoubleSide });
+    const trimMaterial = new THREE.MeshStandardMaterial({ color: '#aaa092', roughness: 0.78, metalness: 0.04 });
+    const frameMaterial = addGallerySurfaceShader(new THREE.MeshStandardMaterial({ color: '#756957', roughness: 0.48, metalness: 0.34 }), 0.0025 * shaderDetail, 0.028 * shaderDetail);
+    const frameInnerMaterial = new THREE.MeshStandardMaterial({ color: '#e0d9ce', roughness: 0.82, metalness: 0.02 });
+    const darkMetal = new THREE.MeshStandardMaterial({ color: '#393a37', roughness: 0.42, metalness: 0.52 });
+    const woodMaterial = new THREE.MeshStandardMaterial({ color: '#8f785d', roughness: 0.66, metalness: 0.02 });
+    const warmEmissive = new THREE.MeshBasicMaterial({ color: '#f3dfbd' });
+
+    function makeFloorMap() {
+      const c = document.createElement('canvas');
+      c.width = c.height = 384;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#e3dfd6'; ctx.fillRect(0, 0, 512, 512);
+      ctx.strokeStyle = 'rgba(154,145,128,.12)'; ctx.lineWidth = 1;
+      for (let n = 0; n <= 384; n += 96) {
+        ctx.beginPath(); ctx.moveTo(n, 0); ctx.lineTo(n, 512); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, n); ctx.lineTo(512, n); ctx.stroke();
+      }
+      let seed = 23;
+      for (let i = 0; i < 1900; i++) {
+        seed = (seed * 1664525 + 1013904223) >>> 0;
+        const x = seed % 512;
+        seed = (seed * 1664525 + 1013904223) >>> 0;
+        const y = seed % 512;
+        ctx.fillStyle = (seed & 1) ? 'rgba(255,255,255,.12)' : 'rgba(116,105,87,.035)';
+        ctx.fillRect(x, y, 1, 1);
+      }
+      const texture = new THREE.CanvasTexture(c);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(6, 6);
+      texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+      return texture;
+    }
+    floorMaterial.map = makeFloorMap();
+    floorMaterial.needsUpdate = true;
+
+    const galleryFloor = addBox(scene, new THREE.PlaneGeometry(ROOM_HALF * 2, ROOM_HALF * 2), floorMaterial, { x: 0, y: 0, z: 0 }, { x: -Math.PI / 2 });
+    galleryFloor.receiveShadow = false;
     addBox(scene, new THREE.PlaneGeometry(ROOM_HALF * 2, ROOM_HALF * 2), ceilingMaterial, { x: 0, y: ROOM_HEIGHT, z: 0 }, { x: Math.PI / 2 });
-    // Four clean gallery walls.
+    // The south wall is split to create a proper entrance opening.
     addBox(scene, new THREE.BoxGeometry(ROOM_HALF * 2 + 0.2, ROOM_HEIGHT, 0.2), wallMaterial, { x: 0, y: ROOM_HEIGHT / 2, z: -ROOM_HALF - 0.02 });
-    addBox(scene, new THREE.BoxGeometry(ROOM_HALF * 2 + 0.2, ROOM_HEIGHT, 0.2), wallMaterial, { x: 0, y: ROOM_HEIGHT / 2, z: ROOM_HALF + 0.02 });
+    const sideWallWidth = ROOM_HALF - DOOR_HALF_WIDTH;
+    addBox(scene, new THREE.BoxGeometry(sideWallWidth, ROOM_HEIGHT, 0.2), wallMaterial, { x: -(ROOM_HALF + DOOR_HALF_WIDTH) / 2, y: ROOM_HEIGHT / 2, z: DOOR_Z });
+    addBox(scene, new THREE.BoxGeometry(sideWallWidth, ROOM_HEIGHT, 0.2), wallMaterial, { x: (ROOM_HALF + DOOR_HALF_WIDTH) / 2, y: ROOM_HEIGHT / 2, z: DOOR_Z });
+    addBox(scene, new THREE.BoxGeometry(DOOR_HALF_WIDTH * 2 + 0.18, ROOM_HEIGHT - 3.35, 0.2), wallMaterial, { x: 0, y: (ROOM_HEIGHT + 3.35) / 2, z: DOOR_Z });
     addBox(scene, new THREE.BoxGeometry(0.2, ROOM_HEIGHT, ROOM_HALF * 2 + 0.2), wallMaterial, { x: -ROOM_HALF - 0.02, y: ROOM_HEIGHT / 2, z: 0 });
     addBox(scene, new THREE.BoxGeometry(0.2, ROOM_HEIGHT, ROOM_HALF * 2 + 0.2), wallMaterial, { x: ROOM_HALF + 0.02, y: ROOM_HEIGHT / 2, z: 0 });
-    // Discreet baseboards make the room feel finished without clutter.
+    // Gallery baseboards; the entrance threshold stays clear.
     addBox(scene, new THREE.BoxGeometry(ROOM_HALF * 2, 0.12, 0.055), trimMaterial, { x: 0, y: 0.075, z: -ROOM_HALF + 0.07 });
-    addBox(scene, new THREE.BoxGeometry(ROOM_HALF * 2, 0.12, 0.055), trimMaterial, { x: 0, y: 0.075, z: ROOM_HALF - 0.07 });
+    addBox(scene, new THREE.BoxGeometry(sideWallWidth, 0.12, 0.055), trimMaterial, { x: -(ROOM_HALF + DOOR_HALF_WIDTH) / 2, y: 0.075, z: ROOM_HALF - 0.07 });
+    addBox(scene, new THREE.BoxGeometry(sideWallWidth, 0.12, 0.055), trimMaterial, { x: (ROOM_HALF + DOOR_HALF_WIDTH) / 2, y: 0.075, z: ROOM_HALF - 0.07 });
     addBox(scene, new THREE.BoxGeometry(0.055, 0.12, ROOM_HALF * 2), trimMaterial, { x: -ROOM_HALF + 0.07, y: 0.075, z: 0 });
     addBox(scene, new THREE.BoxGeometry(0.055, 0.12, ROOM_HALF * 2), trimMaterial, { x: ROOM_HALF - 0.07, y: 0.075, z: 0 });
+
+    // A small covered entrance foyer outside the main gallery.
+    const foyerFloor = addBox(scene, new THREE.PlaneGeometry(8.35, 6.15), floorMaterial, { x: 0, y: 0.006, z: 11.12 }, { x: -Math.PI / 2 });
+    foyerFloor.receiveShadow = false;
+    addBox(scene, new THREE.BoxGeometry(0.18, ROOM_HEIGHT, 6.15), wallMaterial, { x: -4.17, y: ROOM_HEIGHT / 2, z: 11.12 });
+    addBox(scene, new THREE.BoxGeometry(0.18, ROOM_HEIGHT, 6.15), wallMaterial, { x: 4.17, y: ROOM_HEIGHT / 2, z: 11.12 });
+    addBox(scene, new THREE.BoxGeometry(8.35, 0.18, 6.15), ceilingMaterial, { x: 0, y: ROOM_HEIGHT - 0.08, z: 11.12 });
+    addBox(scene, new THREE.BoxGeometry(8.25, 0.12, 0.06), trimMaterial, { x: 0, y: 0.075, z: 8.18 });
+    addBox(scene, new THREE.BoxGeometry(8.2, 0.16, 0.13), trimMaterial, { x: 0, y: ROOM_HEIGHT - 0.19, z: 8.13 });
+
+    function makeSignTexture(title, subtitle, studio) {
+      const c = document.createElement('canvas'); c.width = 1200; c.height = 340;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#25241f'; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.strokeStyle = 'rgba(226,210,181,.62)'; ctx.lineWidth = 3; ctx.strokeRect(17, 17, c.width - 34, c.height - 34);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#f6f1e7';
+      ctx.font = '700 76px Arial, sans-serif'; ctx.fillText(title, 600, 126, 1080);
+      ctx.fillStyle = '#d0c3aa'; ctx.font = '400 25px Arial, sans-serif'; ctx.fillText(subtitle, 600, 205);
+      ctx.fillStyle = '#a99f8c'; ctx.font = '500 18px Arial, sans-serif'; ctx.letterSpacing = '4px'; ctx.fillText(studio, 600, 270);
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 2; return t;
+    }
+    const entranceSign = new THREE.Mesh(new THREE.PlaneGeometry(3.75, 1.06), new THREE.MeshBasicMaterial({ map: makeSignTexture('MIRSAID. Z. MUSEUM', 'PERSONAL MEMORY GALLERY', 'BY VIGERIX STUDIO'), toneMapped: false, side: THREE.DoubleSide }));
+    entranceSign.position.set(0, 4.03, 8.145);
+    entranceSign.receiveShadow = false;
+    scene.add(entranceSign);
+
+    // Architectural light strips are emissive meshes: they look bright without adding GPU lights.
+    const coveLeft = addBox(scene, new THREE.BoxGeometry(0.055, 0.028, 5.45), warmEmissive, { x: -3.88, y: 5.08, z: 11.08 });
+    const coveRight = addBox(scene, new THREE.BoxGeometry(0.055, 0.028, 5.45), warmEmissive, { x: 3.88, y: 5.08, z: 11.08 });
+    const coveFront = addBox(scene, new THREE.BoxGeometry(7.55, 0.025, 0.045), warmEmissive, { x: 0, y: 5.075, z: 8.36 });
+    const ceilingGlowMaterial = new THREE.MeshBasicMaterial({ color: '#fff1d8' });
+    for (const z of [-4.9, 0, 4.9]) {
+      const glow = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 0.12), ceilingGlowMaterial);
+      glow.rotation.x = -Math.PI / 2;
+      glow.position.set(0, ROOM_HEIGHT - 0.025, z);
+      scene.add(glow);
+    }
+
+    // Glass double doors with metallic frames and animated hinges.
+    const glassMaterial = new THREE.MeshBasicMaterial({ color: '#cbd7d5', transparent: true, opacity: 0.20, depthWrite: false, side: THREE.DoubleSide });
+    const doorFrameMaterial = new THREE.MeshStandardMaterial({ color: '#827b6d', metalness: 0.78, roughness: 0.28 });
+    const doorHandles = [];
+    function createDoorLeaf(side) {
+      const pivot = new THREE.Group();
+      pivot.position.set(side * (DOOR_HALF_WIDTH - 0.05), 0, DOOR_Z + 0.12);
+      const direction = side === -1 ? 1 : -1;
+      const panel = new THREE.Group();
+      panel.position.x = direction * 0.02;
+      pivot.add(panel);
+      const centerX = direction * 0.96;
+      const pane = new THREE.Mesh(new THREE.BoxGeometry(1.91, 3.18, 0.055), glassMaterial);
+      pane.position.set(centerX, 1.59, 0);
+      pane.castShadow = false; pane.receiveShadow = false; panel.add(pane);
+      for (const [x, y, w, h] of [[centerX - direction * 0.94, 1.59, 0.055, 3.22], [centerX + direction * 0.94, 1.59, 0.055, 3.22], [centerX, 0.035, 1.93, 0.07], [centerX, 3.145, 1.93, 0.07]]) {
+        const rail = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.085), doorFrameMaterial);
+        rail.position.set(x, y, 0); rail.castShadow = false; panel.add(rail);
+      }
+      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.58, 12), darkMetal);
+      handle.position.set(centerX - direction * 0.18, 1.45, -0.075); panel.add(handle); doorHandles.push(handle);
+      const handleTop = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), doorFrameMaterial);
+      handleTop.position.set(handle.position.x, 1.75, -0.075); panel.add(handleTop);
+      const handleBottom = handleTop.clone(); handleBottom.position.y = 1.16; panel.add(handleBottom);
+      scene.add(pivot);
+      return { pivot, panel, side };
+    }
+    const leftDoor = createDoorLeaf(-1);
+    const rightDoor = createDoorLeaf(1);
+    for (const x of [-DOOR_HALF_WIDTH, DOOR_HALF_WIDTH]) {
+      const jamb = new THREE.Mesh(new THREE.BoxGeometry(0.13, 3.42, 0.26), doorFrameMaterial);
+      jamb.position.set(x, 1.69, DOOR_Z + 0.12); jamb.castShadow = false; scene.add(jamb);
+    }
+    const topDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(DOOR_HALF_WIDTH * 2 + 0.24, 0.14, 0.26), doorFrameMaterial);
+    topDoorFrame.position.set(0, 3.38, DOOR_Z + 0.12); topDoorFrame.castShadow = false; scene.add(topDoorFrame);
+    const threshold = new THREE.Mesh(new THREE.BoxGeometry(DOOR_HALF_WIDTH * 2 - 0.08, 0.035, 0.5), darkMetal);
+    threshold.position.set(0, 0.018, DOOR_Z + 0.08); scene.add(threshold);
+    const doorIndicatorMaterial = new THREE.MeshStandardMaterial({ color: '#9eaa91', emissive: '#73916b', emissiveIntensity: 0.55, roughness: 0.35 });
+    const doorIndicator = new THREE.Mesh(new THREE.SphereGeometry(0.055, 14, 10), doorIndicatorMaterial);
+    doorIndicator.position.set(DOOR_HALF_WIDTH + 0.16, 3.18, DOOR_Z + 0.145); scene.add(doorIndicator);
+
+    // Reception desk with a quiet information plaque.
+    const deskBase = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.9, 0.9), woodMaterial);
+    deskBase.position.set(2.77, 0.48, 10.15); deskBase.castShadow = false; deskBase.receiveShadow = false; scene.add(deskBase);
+    const deskFront = new THREE.Mesh(new THREE.BoxGeometry(1.68, 0.55, 0.025), new THREE.MeshStandardMaterial({ color: '#665849', roughness: 0.78 }));
+    deskFront.position.set(2.77, 0.49, 10.615); scene.add(deskFront);
+    const deskTop = new THREE.Mesh(new THREE.BoxGeometry(2.02, 0.11, 1.04), new THREE.MeshStandardMaterial({ color: '#eee9df', roughness: 0.35, metalness: 0.04 }));
+    deskTop.position.set(2.77, 0.98, 10.15); deskTop.castShadow = false; scene.add(deskTop);
+    const deskPlaqueCanvas = document.createElement('canvas'); deskPlaqueCanvas.width = 512; deskPlaqueCanvas.height = 128;
+    const dpc = deskPlaqueCanvas.getContext('2d'); dpc.fillStyle = '#3b3831'; dpc.fillRect(0,0,512,128); dpc.fillStyle = '#e9dfcb'; dpc.font = '700 43px Arial'; dpc.textAlign = 'center'; dpc.fillText('WELCOME',256,82);
+    const deskPlaqueTex = new THREE.CanvasTexture(deskPlaqueCanvas); deskPlaqueTex.colorSpace = THREE.SRGBColorSpace;
+    const deskPlaque = new THREE.Mesh(new THREE.PlaneGeometry(1.2,0.3), new THREE.MeshBasicMaterial({ map: deskPlaqueTex, toneMapped:false }));
+    deskPlaque.position.set(2.77,0.55,10.634); scene.add(deskPlaque);
+
+    // A restrained foyer plant adds a little warmth without becoming a visual focal point.
+    function createPlant(x, z, scale = 1) {
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.22 * scale, 0.18 * scale, 0.42 * scale, 14), new THREE.MeshLambertMaterial({ color: '#aaa092' }));
+      pot.position.set(x, 0.21 * scale, z); scene.add(pot);
+      const leafMaterial = new THREE.MeshLambertMaterial({ color: '#69765f' });
+      const leafGeometry = new THREE.SphereGeometry(0.105 * scale, 8, 6);
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI * 2 / 6;
+        const leaf = new THREE.Mesh(leafGeometry, leafMaterial);
+        leaf.scale.set(0.62, 2.0, 0.72);
+        leaf.position.set(x + Math.cos(angle) * 0.17 * scale, 0.62 * scale + (i % 2) * 0.10 * scale, z + Math.sin(angle) * 0.17 * scale);
+        leaf.rotation.z = Math.cos(angle) * 0.38;
+        scene.add(leaf);
+      }
+    }
+    createPlant(-3.72, 12.38, 0.96);
+
+
+    // The centrepiece: a contemporary bronze "memory orbit" on a stone pedestal.
+    // A few shared meshes replace the old character model and add a clear focal point.
+    const sculptureRoot = new THREE.Group();
+    sculptureRoot.position.set(0, 0, -0.35);
+    scene.add(sculptureRoot);
+    const stoneMaterial = addGallerySurfaceShader(new THREE.MeshStandardMaterial({ color: '#77756e', roughness: 0.34, metalness: 0.18 }), 0.003 * shaderDetail, 0.018 * shaderDetail);
+    const bronzeMaterial = addGallerySurfaceShader(new THREE.MeshStandardMaterial({ color: '#a88655', roughness: 0.29, metalness: 0.78, emissive: '#1b1208', emissiveIntensity: 0.12 }), 0.002 * shaderDetail, 0.045 * shaderDetail);
+    const ivoryMaterial = new THREE.MeshStandardMaterial({ color: '#e9e1d2', roughness: 0.32, metalness: 0.08 });
+    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.79, 0.86, 0.48, 48), stoneMaterial);
+    plinth.position.y = 0.25; sculptureRoot.add(plinth);
+    const plinthTop = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.79, 0.075, 48), ivoryMaterial);
+    plinthTop.position.y = 0.525; sculptureRoot.add(plinthTop);
+    const centreStem = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.17, 0.32, 24), darkMetal);
+    centreStem.position.y = 0.72; sculptureRoot.add(centreStem);
+    const orbit = new THREE.Group(); orbit.position.y = 1.62; sculptureRoot.add(orbit);
+    const knot = new THREE.Mesh(new THREE.TorusKnotGeometry(0.48, 0.105, 88, 10, 2, 3), bronzeMaterial);
+    knot.scale.set(1, 1.24, 0.88); knot.rotation.x = 0.14; orbit.add(knot);
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(0.77, 0.022, 8, 64), ivoryMaterial);
+    halo.rotation.x = Math.PI / 2; halo.rotation.z = 0.28; halo.position.y = 0.04; orbit.add(halo);
+    const smallOrb = new THREE.Mesh(new THREE.SphereGeometry(0.105, 20, 14), bronzeMaterial);
+    smallOrb.position.set(0.54, 0.67, 0.02); orbit.add(smallOrb);
+
+    // Fine brass inlays make the centre display feel integrated with the floor.
+    const floorInlayMaterial = new THREE.MeshStandardMaterial({ color: '#9f8255', metalness: 0.68, roughness: 0.42 });
+    for (const [radius, tube] of [[1.13, 0.012], [1.31, 0.007]]) {
+      const inlay = new THREE.Mesh(new THREE.TorusGeometry(radius, tube, 6, 88), floorInlayMaterial);
+      inlay.rotation.x = -Math.PI / 2; inlay.position.set(0, 0.018, -0.35); scene.add(inlay);
+    }
+    const sculptureLabelCanvas = document.createElement('canvas'); sculptureLabelCanvas.width = 512; sculptureLabelCanvas.height = 112;
+    const slc = sculptureLabelCanvas.getContext('2d');
+    slc.fillStyle = '#35342f'; slc.fillRect(0, 0, 512, 112);
+    slc.fillStyle = '#f0e8d9'; slc.textAlign = 'center'; slc.font = '600 31px Arial'; slc.fillText('MEMORY ORBIT', 256, 46);
+    slc.fillStyle = '#c6b89e'; slc.font = '400 18px Arial'; slc.fillText('A study of moments and time', 256, 79);
+    const sculptureLabelTexture = new THREE.CanvasTexture(sculptureLabelCanvas); sculptureLabelTexture.colorSpace = THREE.SRGBColorSpace;
+    const sculptureLabel = new THREE.Mesh(new THREE.PlaneGeometry(0.66, 0.145), new THREE.MeshBasicMaterial({ map: sculptureLabelTexture, toneMapped: false }));
+    sculptureLabel.position.set(0, 0.40, 0.875); sculptureRoot.add(sculptureLabel);
+
+    // Two low-profile benches beside the walls; they frame the room without blocking the centre aisle.
+    function addGalleryBench(x, z, rotationY = 0) {
+      const bench = new THREE.Group(); bench.position.set(x, 0, z); bench.rotation.y = rotationY; scene.add(bench);
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(2.25, 0.14, 0.52), new THREE.MeshStandardMaterial({ color: '#79654e', roughness: 0.48, metalness: 0.03 }));
+      seat.position.y = 0.48; bench.add(seat);
+      const under = new THREE.Mesh(new THREE.BoxGeometry(1.82, 0.09, 0.38), darkMetal); under.position.y = 0.36; bench.add(under);
+      const legGeo = new THREE.BoxGeometry(0.10, 0.36, 0.42);
+      for (const lx of [-0.91, 0.91]) { const leg = new THREE.Mesh(legGeo, darkMetal); leg.position.set(lx, 0.18, 0); bench.add(leg); }
+      return bench;
+    }
+    addGalleryBench(-6.15, -0.15, 0);
+    addGalleryBench(6.15, -0.15, 0);
+
+
+
+    // Decorative wall panels and light slots give the gallery more depth without extra lights.
+    const panelLineMaterial = new THREE.MeshBasicMaterial({ color: '#d5cfc3' });
+    const wallAccentMaterial = new THREE.MeshBasicMaterial({ color: '#e8d9bd' });
+    for (const x of [-6.9, -3.45, 0, 3.45, 6.9]) {
+      const vertical = new THREE.Mesh(new THREE.BoxGeometry(0.018, 4.4, 0.025), panelLineMaterial);
+      vertical.position.set(x, 2.62, -7.875); scene.add(vertical);
+    }
+    for (const x of [-3.75, 3.75]) {
+      const slimLight = new THREE.Mesh(new THREE.BoxGeometry(0.035, 2.8, 0.025), wallAccentMaterial);
+      slimLight.position.set(x, 2.8, -7.84); scene.add(slimLight);
+    }
+    for (const side of [-1, 1]) {
+      for (const z of [-5.4, -2.7, 0, 2.7, 5.4]) {
+        const reveal = new THREE.Mesh(new THREE.BoxGeometry(0.025, 4.25, 0.035), panelLineMaterial);
+        reveal.position.set(side * 7.84, 2.62, z); scene.add(reveal);
+      }
+      for (const y of [0.42, 4.78]) {
+        const rail = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.025, 15.2), wallAccentMaterial);
+        rail.position.set(side * 7.84, y, 0); scene.add(rail);
+      }
+    }
+    const frameBackingGeometry = new THREE.BoxGeometry(1.58, 1.16, 0.09);
+    const frameInnerGeometry = new THREE.BoxGeometry(1.46, 1.04, 0.025);
+    const artGeometry = new THREE.PlaneGeometry(1.38, 0.92);
+    const labelGeometry = new THREE.PlaneGeometry(1.28, 0.14);
+    const artMaterialTemplate = new THREE.MeshBasicMaterial({ map: placeholderTexture, toneMapped: false });
 
     function createSlot(slotId, wall, x, y, z, rotationY, index) {
       const group = new THREE.Group();
@@ -464,39 +759,25 @@
       group.userData.wall = wall;
       group.userData.index = index;
 
-      const backing = new THREE.Mesh(new THREE.BoxGeometry(1.30, 0.98, 0.075), frameMaterial);
-      backing.position.z = 0;
+      const backing = new THREE.Mesh(frameBackingGeometry, frameMaterial);
       group.add(backing);
-      const innerShade = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.82, 0.026), frameInnerMaterial);
-      innerShade.position.z = 0.045;
+      const innerShade = new THREE.Mesh(frameInnerGeometry, frameInnerMaterial);
+      innerShade.position.z = 0.055;
       group.add(innerShade);
-      const art = new THREE.Mesh(new THREE.PlaneGeometry(1.095, 0.765), new THREE.MeshBasicMaterial({ map: placeholderTexture, toneMapped: false }));
-      art.position.set(0, 0.002, 0.061);
+      const art = new THREE.Mesh(artGeometry, artMaterialTemplate.clone());
+      art.position.set(0, 0.015, 0.071);
       group.add(art);
 
-      // Minimal frame rails around the image.
-      const railDepth = 0.04;
-      const railZ = 0.075;
-      const rails = [
-        { g: new THREE.BoxGeometry(1.30, 0.085, railDepth), p: [0, 0.447, railZ] },
-        { g: new THREE.BoxGeometry(1.30, 0.085, railDepth), p: [0, -0.447, railZ] },
-        { g: new THREE.BoxGeometry(0.085, 0.90, railDepth), p: [-0.607, 0, railZ] },
-        { g: new THREE.BoxGeometry(0.085, 0.90, railDepth), p: [0.607, 0, railZ] }
-      ];
-      for (const rail of rails) {
-        const mesh = new THREE.Mesh(rail.g, frameMaterial);
-        mesh.position.set(rail.p[0], rail.p[1], rail.p[2]);
-        group.add(mesh);
-      }
-
       const labelCanvas = document.createElement('canvas');
-      labelCanvas.width = 512;
-      labelCanvas.height = 90;
+      labelCanvas.width = 384;
+      labelCanvas.height = 56;
       drawLabelTexture(labelCanvas, '');
       const labelTexture = makeCanvasTexture(labelCanvas);
-      const labelMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.10, 0.15), new THREE.MeshBasicMaterial({ map: labelTexture, toneMapped: false }));
-      labelMesh.position.set(0, -0.58, 0.054);
+      labelTexture.anisotropy = 1;
+      const labelMesh = new THREE.Mesh(labelGeometry, new THREE.MeshBasicMaterial({ map: labelTexture, toneMapped: false }));
+      labelMesh.position.set(0, -0.69, 0.055);
       group.add(labelMesh);
+
       group.traverse((object) => {
         if (object.isMesh) object.userData.slotId = slotId;
       });
@@ -507,15 +788,17 @@
       return slot;
     }
 
-    const positions = [-5.2, -2.6, 0, 2.6, 5.2];
-    const rows = [2.0, 3.62];
-    // Each wall has ten reserved spots. New photos use the nearest unused spot.
+    // 32 larger frames: cleaner exhibition rhythm and fewer draw calls than the previous 38 x 8 meshes.
+    const horizontal = [-4.9, -1.65, 1.65, 4.9];
+    const sideDepths = [-4.85, -1.62, 1.62, 4.85];
+    const rows = [2.05, 3.72];
     for (const [rowIndex, y] of rows.entries()) {
-      for (let i = 0; i < positions.length; i++) {
-        createSlot(`north-${rowIndex}-${i}`, 'north', positions[i], y, -7.78, 0, rowIndex * positions.length + i);
-        createSlot(`south-${rowIndex}-${i}`, 'south', -positions[i], y, 7.78, Math.PI, rowIndex * positions.length + i);
-        createSlot(`east-${rowIndex}-${i}`, 'east', 7.78, y, positions[i], -Math.PI / 2, rowIndex * positions.length + i);
-        createSlot(`west-${rowIndex}-${i}`, 'west', -7.78, y, -positions[i], Math.PI / 2, rowIndex * positions.length + i);
+      for (let i = 0; i < 4; i++) {
+        createSlot(`north-${rowIndex}-${i}`, 'north', horizontal[i], y, -7.78, 0, rowIndex * 4 + i);
+        const southPositions = [-5.0, -3.0, 3.0, 5.0];
+        createSlot(`south-${rowIndex}-${i}`, 'south', southPositions[i], y, 7.78, Math.PI, rowIndex * 4 + i);
+        createSlot(`east-${rowIndex}-${i}`, 'east', 7.78, y, sideDepths[i], -Math.PI / 2, rowIndex * 4 + i);
+        createSlot(`west-${rowIndex}-${i}`, 'west', -7.78, y, -sideDepths[i], Math.PI / 2, rowIndex * 4 + i);
       }
     }
 
@@ -787,8 +1070,16 @@
 
     async function loadStoredPaintings() {
       const records = await databaseRequest('readonly', 'getAll');
-      for (const record of records || []) {
-        if (!slots.has(record.slotId) || !record.blob) continue;
+      for (const original of records || []) {
+        if (!original.blob) continue;
+        let record = original;
+        if (!slots.has(record.slotId) || paintings.has(record.slotId)) {
+          const replacement = [...slots.values()].find((candidate) => !paintings.has(candidate.id));
+          if (!replacement) continue;
+          record = { ...original, slotId: replacement.id, wall: replacement.wall, wallName: replacement.wallName, updatedAt: original.updatedAt || Date.now() };
+          await databaseRequest('readwrite', 'put', record);
+          await databaseRequest('readwrite', 'delete', original.slotId);
+        }
         paintings.set(record.slotId, record);
       }
       updateCount();
@@ -926,32 +1217,77 @@
     function resize() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.65));
+      const nowCoarse = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 760;
+      const nowLowEnd = nowCoarse || (navigator.hardwareConcurrency || 4) <= 4 || (navigator.deviceMemory || 4) <= 4;
+      currentPixelRatio = Math.min(window.devicePixelRatio || 1, nowLowEnd ? 0.88 : 1.08);
+      renderer.setPixelRatio(currentPixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight, false);
     }
     window.addEventListener('resize', resize);
 
+    let lastFrameTime = 0;
     function animate() {
-      const delta = Math.min(clock.getDelta(), 0.05);
+      const now = performance.now();
+      if (now - lastFrameTime < frameInterval) return;
+      const delta = Math.min((now - lastFrameTime) / 1000 || 0.016, 0.05);
+      lastFrameTime = now;
       if (!editorBackdrop.hidden || drawer.classList.contains('open')) {
         renderer.render(scene, camera);
         return;
       }
+      museumElapsed += delta;
+      // Automatic double-door response. The glass leaves swing into the foyer.
+      const doorDistance = Math.hypot(camera.position.x, camera.position.z - DOOR_Z);
+      const doorTarget = (doorDistance < 4.7 && Math.abs(camera.position.x) < 3.0) ? 1 : 0;
+      doorOpen = THREE.MathUtils.damp(doorOpen, doorTarget, 3.2, delta);
+      leftDoor.pivot.rotation.y = -doorOpen * 1.16;
+      rightDoor.pivot.rotation.y = doorOpen * 1.16;
+      doorIndicatorMaterial.color.set(doorOpen > 0.55 ? '#a9c69a' : '#b6a58e');
+      doorIndicatorMaterial.emissive.set(doorOpen > 0.55 ? '#6d9860' : '#8d7352');
+
       const forwardInput = (pressed.KeyW || pressed.ArrowUp ? 1 : 0) - (pressed.KeyS || pressed.ArrowDown ? 1 : 0) - joystick.y;
       const sideInput = (pressed.KeyD || pressed.ArrowRight ? 1 : 0) - (pressed.KeyA || pressed.ArrowLeft ? 1 : 0) + joystick.x;
       const magnitude = Math.hypot(forwardInput, sideInput);
       if (magnitude > 0.08) {
         const forward = new THREE.Vector3(-Math.sin(lookYaw), 0, -Math.cos(lookYaw));
         const right = new THREE.Vector3(Math.cos(lookYaw), 0, -Math.sin(lookYaw));
-        const speed = pressed.ShiftLeft || pressed.ShiftRight ? 4.2 : 2.65;
+        const speed = pressed.ShiftLeft || pressed.ShiftRight ? 3.6 : 2.35;
         const amount = speed * delta / Math.max(1, magnitude);
-        camera.position.addScaledVector(forward, forwardInput * amount);
-        camera.position.addScaledVector(right, sideInput * amount);
-        camera.position.x = THREE.MathUtils.clamp(camera.position.x, -WALK_LIMIT, WALK_LIMIT);
-        camera.position.z = THREE.MathUtils.clamp(camera.position.z, -WALK_LIMIT, WALK_LIMIT);
+        let nextX = camera.position.x + forward.x * forwardInput * amount + right.x * sideInput * amount;
+        let nextZ = camera.position.z + forward.z * forwardInput * amount + right.z * sideInput * amount;
+        const crossedDoorLine = (camera.position.z <= DOOR_CROSSING_Z && nextZ > DOOR_CROSSING_Z) || (camera.position.z > DOOR_CROSSING_Z && nextZ <= DOOR_CROSSING_Z);
+        if (crossedDoorLine && !(Math.abs(nextX) < 1.72 && doorOpen > 0.86)) {
+          nextZ = camera.position.z <= DOOR_CROSSING_Z ? DOOR_CROSSING_Z - 0.015 : DOOR_CROSSING_Z + 0.015;
+        }
+        if (nextZ > DOOR_CROSSING_Z) {
+          nextX = THREE.MathUtils.clamp(nextX, -3.72, 3.72);
+          nextZ = THREE.MathUtils.clamp(nextZ, DOOR_CROSSING_Z + 0.015, 13.05);
+          const hitsFoyerObstacle = (x, z) =>
+            (x > 1.48 && x < 3.72 && z > 9.28 && z < 10.98);
+          if (hitsFoyerObstacle(nextX, nextZ)) {
+            if (!hitsFoyerObstacle(nextX, camera.position.z)) nextZ = camera.position.z;
+            else if (!hitsFoyerObstacle(camera.position.x, nextZ)) nextX = camera.position.x;
+            else { nextX = camera.position.x; nextZ = camera.position.z; }
+          }
+        } else {
+          nextX = THREE.MathUtils.clamp(nextX, -WALK_LIMIT, WALK_LIMIT);
+          nextZ = THREE.MathUtils.clamp(nextZ, -WALK_LIMIT, DOOR_CROSSING_Z - 0.015);
+          // Keep a comfortable walking radius around the central pedestal.
+          const sculptureDx = nextX;
+          const sculptureDz = nextZ + 0.35;
+          if (sculptureDx * sculptureDx + sculptureDz * sculptureDz < 1.10 * 1.10) {
+            if (Math.abs(camera.position.x) > Math.abs(camera.position.z + 0.35)) nextZ = camera.position.z;
+            else nextX = camera.position.x;
+          }
+        }
+        camera.position.x = nextX;
+        camera.position.z = nextZ;
       }
       camera.position.y = 1.66;
       camera.rotation.set(lookPitch, lookYaw, 0, 'YXZ');
+      orbit.rotation.y = -museumElapsed * 0.13;
+      halo.rotation.z = 0.28 + Math.sin(museumElapsed * 0.22) * 0.035;
+
       renderer.render(scene, camera);
     }
 
